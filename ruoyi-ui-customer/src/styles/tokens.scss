@@ -1,0 +1,74 @@
+/**
+ * 智维云服 - SCSS 设计令牌
+ *
+ * 本文件仅承载 CSS 变量无法表达的"编译期"令牌：
+ *  - 媒体查询断点（@media 内只能用 SCSS 变量）
+ *  - Z-index 常量（业务层显式使用）
+ *  - 动画时长混入（与 CSS --motion-* 变量同源）
+ *
+ * 运行时可切换的主题色、字号、间距、圆角、阴影等请使用
+ * src/styles/customer.css :root 中的 CSS 变量。
+ */
+
+// ============ 媒体查询断点 ============
+// 命名参考 Bootstrap 5 断点体系
+$bp-sm: 640px;   // 手机横屏
+$bp-md: 768px;   // 平板竖屏
+$bp-lg: 1024px;  // 平板横屏 / 小屏笔电
+$bp-xl: 1280px;  // 笔电 / 标准桌面
+$bp-2xl: 1536px; // 中型桌面
+$bp-3xl: 1920px; // 大屏桌面 / 会议室屏
+
+// ============ 媒体查询 Mixin ============
+@mixin media-down($bp) {
+  @media (max-width: ($bp - 1px)) { @content; }
+}
+@mixin media-up($bp) {
+  @media (min-width: $bp) { @content; }
+}
+@mixin media-between($min, $max) {
+  @media (min-width: $min) and (max-width: ($max - 1px)) { @content; }
+}
+
+// ============ Z-index 业务常量（与 CSS --zi-* 对齐） ============
+$z-dropdown: 1000;
+$z-sticky: 1020;
+$z-fixed: 1030;
+$z-modal-backdrop: 1040;
+$z-modal: 1050;
+$z-popover: 1060;
+$z-tooltip: 1070;
+$z-toast: 1080;
+
+// ============ 动效常量（与 CSS --motion-* 对齐） ============
+$motion-fast: 150ms;
+$motion-base: 250ms;
+$motion-slow: 400ms;
+$ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+$ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+// ============ 业务混入 ============
+
+// 标准卡片容器
+@mixin card-base {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+// 主标题渐变条
+@mixin title-bar($height: 16px, $width: 4px) {
+  &::before {
+    content: '';
+    display: block;
+    width: $width;
+    height: $height;
+    background: var(--primary-gradient);
+    border-radius: 2px;
+  }
+}
+
+// 平滑过渡
+@mixin smooth-transition {
+  transition: all $motion-base $ease-in-out;
+}

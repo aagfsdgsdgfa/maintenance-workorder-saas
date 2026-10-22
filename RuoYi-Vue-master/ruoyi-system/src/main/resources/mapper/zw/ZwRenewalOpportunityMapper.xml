@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.zw.mapper.ZwRenewalOpportunityMapper">
+
+    <resultMap type="com.ruoyi.zw.domain.RenewalOpportunity" id="RenewalOpportunityResult">
+        <id     property="opportunityId"    column="id"                />
+        <result property="customerId"        column="customer_id"       />
+        <result property="assetId"           column="asset_id"          />
+        <result property="contractId"        column="contract_id"       />
+        <result property="opportunityType"  column="opportunity_type"  />
+        <result property="title"             column="title"             />
+        <result property="description"        column="description"       />
+        <result property="expireDate"        column="expire_date"       />
+        <result property="salesUserId"       column="sales_user_id"     />
+        <result property="status"           column="status"           />
+        <result property="followRecords"    column="follow_records"   />
+        <result property="quotationUrl"     column="quotation_url"    />
+        <result property="dealAmount"        column="deal_amount"       />
+        <result property="delFlag"          column="del_flag"         />
+        <result property="createTime"        column="create_time"      />
+        <result property="updateTime"        column="update_time"      />
+    </resultMap>
+
+    <sql id="selectRenewalOpportunityVo">
+        select id, customer_id, asset_id, contract_id, opportunity_type, title, description,
+               expire_date, sales_user_id, status, follow_records, quotation_url, deal_amount,
+               del_flag, create_time, update_time
+        from renewal_opportunities
+    </sql>
+
+    <select id="selectZwRenewalOpportunityList" parameterType="com.ruoyi.zw.domain.RenewalOpportunity" resultMap="RenewalOpportunityResult">
+        <include refid="selectRenewalOpportunityVo"/>
+        <where>
+            <if test="customerId != null">
+                and customer_id = #{customerId}
+            </if>
+            <if test="assetId != null">
+                and asset_id = #{assetId}
+            </if>
+            <if test="contractId != null">
+                and contract_id = #{contractId}
+            </if>
+            <if test="opportunityType != null and opportunityType != ''">
+                and opportunity_type = #{opportunityType}
+            </if>
+            <if test="salesUserId != null">
+                and sales_user_id = #{salesUserId}
+            </if>
+            <if test="status != null and status != ''">
+                and status = #{status}
+            </if>
+            <if test="delFlag != null and delFlag != ''">
+                and del_flag = #{delFlag}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectZwRenewalOpportunityById" parameterType="Long" resultMap="RenewalOpportunityResult">
+        <include refid="selectRenewalOpportunityVo"/>
+        where id = #{opportunityId} and del_flag = '0'
+    </select>
+
+    <select id="selectZwRenewalOpportunityByCustomerId" parameterType="Long" resultMap="RenewalOpportunityResult">
+        <include refid="selectRenewalOpportunityVo"/>
+        where customer_id = #{customerId} and del_flag = '0'
+        order by create_time desc
+    </select>
+
+    <select id="selectZwRenewalOpportunityByAssetId" parameterType="Long" resultMap="RenewalOpportunityResult">
+        <include refid="selectRenewalOpportunityVo"/>
+        where asset_id = #{assetId} and del_flag = '0'
+        order by create_time desc
+    </select>
+
+    <select id="selectZwRenewalOpportunityByContractId" parameterType="Long" resultMap="RenewalOpportunityResult">
+        <include refid="selectRenewalOpportunityVo"/>
+        where contract_id = #{contractId} and del_flag = '0'
+        limit 1
+    </select>
+
+    <insert id="insertZwRenewalOpportunity" parameterType="com.ruoyi.zw.domain.RenewalOpportunity" useGeneratedKeys="true" keyProperty="opportunityId">
+        insert into renewal_opportunities
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="customerId != null">customer_id,</if>
+            <if test="assetId != null">asset_id,</if>
+            <if test="contractId != null">contract_id,</if>
+            <if test="opportunityType != null and opportunityType != ''">opportunity_type,</if>
+            <if test="title != null and title != ''">title,</if>
+            <if test="description != null">description,</if>
+            <if test="expireDate != null">expire_date,</if>
+            <if test="salesUserId != null">sales_user_id,</if>
+            <if test="status != null and status != ''">status,</if>
+            <if test="followRecords != null">follow_records,</if>
+            <if test="quotationUrl != null and quotationUrl != ''">quotation_url,</if>
+            <if test="dealAmount != null">deal_amount,</if>
+            <if test="delFlag != null and delFlag != ''">del_flag,</if>
+            create_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="customerId != null">#{customerId},</if>
+            <if test="assetId != null">#{assetId},</if>
+            <if test="contractId != null">#{contractId},</if>
+            <if test="opportunityType != null and opportunityType != ''">#{opportunityType},</if>
+            <if test="title != null and title != ''">#{title},</if>
+            <if test="description != null">#{description},</if>
+            <if test="expireDate != null">#{expireDate},</if>
+            <if test="salesUserId != null">#{salesUserId},</if>
+            <if test="status != null and status != ''">#{status},</if>
+            <if test="followRecords != null">#{followRecords},</if>
+            <if test="quotationUrl != null and quotationUrl != ''">#{quotationUrl},</if>
+            <if test="dealAmount != null">#{dealAmount},</if>
+            <if test="delFlag != null and delFlag != ''">#{delFlag},</if>
+            sysdate(),
+        </trim>
+    </insert>
+
+    <update id="updateZwRenewalOpportunity" parameterType="com.ruoyi.zw.domain.RenewalOpportunity">
+        update renewal_opportunities
+        <set>
+            <if test="customerId != null">customer_id = #{customerId},</if>
+            <if test="assetId != null">asset_id = #{assetId},</if>
+            <if test="contractId != null">contract_id = #{contractId},</if>
+            <if test="opportunityType != null and opportunityType != ''">opportunity_type = #{opportunityType},</if>
+            <if test="title != null and title != ''">title = #{title},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="expireDate != null">expire_date = #{expireDate},</if>
+            <if test="salesUserId != null">sales_user_id = #{salesUserId},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="followRecords != null">follow_records = #{followRecords},</if>
+            <if test="quotationUrl != null and quotationUrl != ''">quotation_url = #{quotationUrl},</if>
+            <if test="dealAmount != null">deal_amount = #{dealAmount},</if>
+            <if test="delFlag != null and delFlag != ''">del_flag = #{delFlag},</if>
+            update_time = sysdate(),
+        </set>
+        where id = #{opportunityId}
+    </update>
+
+    <update id="deleteZwRenewalOpportunityByIds">
+        update renewal_opportunities set del_flag = '2' where id in
+        <foreach item="opportunityId" collection="array" open="(" separator="," close=")">
+            #{opportunityId}
+        </foreach>
+    </update>
+
+</mapper>

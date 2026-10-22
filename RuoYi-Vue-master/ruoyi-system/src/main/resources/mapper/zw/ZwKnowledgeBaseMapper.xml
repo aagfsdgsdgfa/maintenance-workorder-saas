@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.zw.mapper.ZwKnowledgeBaseMapper">
+
+    <resultMap type="com.ruoyi.zw.domain.ZwKnowledgeBase" id="ZwKnowledgeBaseResult">
+        <id property="kbId" column="kb_id"/>
+        <result property="kbTitle" column="kb_title"/>
+        <result property="kbType" column="kb_type"/>
+        <result property="brand" column="brand"/>
+        <result property="assetType" column="asset_type"/>
+        <result property="keywords" column="keywords"/>
+        <result property="content" column="content"/>
+        <result property="attachments" column="attachments"/>
+        <result property="status" column="status"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="categoryName" column="category_name"/>
+    </resultMap>
+
+    <sql id="selectZwKnowledgeBaseVo">
+        select kb.kb_id, kb.kb_title, kb.kb_type, kb.brand, kb.asset_type, kb.keywords, kb.content,
+               kb.attachments, kb.status, kb.del_flag, kb.create_by, kb.create_time, kb.update_by, kb.update_time,
+               c.category_name
+        from zw_knowledge_base kb
+        left join zw_kb_category c on kb.category_id = c.category_id and c.del_flag = '0'
+    </sql>
+
+    <select id="selectZwKnowledgeBaseList" resultMap="ZwKnowledgeBaseResult">
+        <include refid="selectZwKnowledgeBaseVo"/>
+        <where>
+            <if test="kbTitle != null and kbTitle != ''">and kb_title like concat('%', #{kbTitle}, '%')</if>
+            <if test="categoryId != null and categoryId != ''">and (kb.category_id = #{categoryId} or kb.kb_type = #{categoryId})</if>
+            <if test="brand != null and brand != ''">and brand = #{brand}</if>
+            <if test="assetType != null and assetType != ''">and asset_type = #{assetType}</if>
+            <if test="keywords != null and keywords != ''">and keywords like concat('%', #{keywords}, '%')</if>
+            <if test="status != null and status != ''">and status = #{status}</if>
+            and del_flag = '0'
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectZwKnowledgeBaseById" resultMap="ZwKnowledgeBaseResult">
+        <include refid="selectZwKnowledgeBaseVo"/>
+        where kb_id = #{kbId} and del_flag = '0'
+    </select>
+
+    <insert id="insertZwKnowledgeBase" useGeneratedKeys="true" keyProperty="kbId">
+        insert into zw_knowledge_base
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="kbTitle != null">kb_title,</if>
+            <if test="kbType != null">kb_type,</if>
+            <if test="categoryId != null">category_id,</if>
+            <if test="brand != null">brand,</if>
+            <if test="assetType != null">asset_type,</if>
+            <if test="keywords != null">keywords,</if>
+            <if test="content != null">content,</if>
+            <if test="attachments != null">attachments,</if>
+            <if test="status != null">status,</if>
+            del_flag, create_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="kbTitle != null">#{kbTitle},</if>
+            <if test="kbType != null">#{kbType},</if>
+            <if test="categoryId != null">#{categoryId},</if>
+            <if test="brand != null">#{brand},</if>
+            <if test="assetType != null">#{assetType},</if>
+            <if test="keywords != null">#{keywords},</if>
+            <if test="content != null">#{content},</if>
+            <if test="attachments != null">#{attachments},</if>
+            <if test="status != null">#{status},</if>
+            '0', now(),
+        </trim>
+    </insert>
+
+    <update id="updateZwKnowledgeBase">
+        update zw_knowledge_base
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="kbTitle != null">kb_title = #{kbTitle},</if>
+            <if test="kbType != null">kb_type = #{kbType},</if>
+            <if test="categoryId != null">category_id = #{categoryId},</if>
+            <if test="brand != null">brand = #{brand},</if>
+            <if test="assetType != null">asset_type = #{assetType},</if>
+            <if test="keywords != null">keywords = #{keywords},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="attachments != null">attachments = #{attachments},</if>
+            <if test="status != null">status = #{status},</if>
+        </trim>
+        where kb_id = #{kbId} and del_flag = '0'
+    </update>
+
+    <update id="deleteZwKnowledgeBaseByIds">
+        update zw_knowledge_base set del_flag = '2' where kb_id in
+        <foreach item="kbId" collection="array" open="(" separator="," close=")">
+            #{kbId}
+        </foreach>
+    </update>
+
+    <select id="selectByKeyword" resultMap="ZwKnowledgeBaseResult">
+        <include refid="selectZwKnowledgeBaseVo"/>
+        where del_flag = '0'
+          and (kb_title like concat('%', #{keyword}, '%')
+               or keywords like concat('%', #{keyword}, '%')
+               or content like concat('%', #{keyword}, '%'))
+        order by create_time desc
+        limit 10
+    </select>
+
+</mapper>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.zw.mapper.ZwCustomerWorkOrderMapper">
+
+    <select id="selectZwCustomerWorkOrderList" resultType="java.util.Map">
+        select w.work_order_id  as workOrderId,
+               w.order_no       as orderNo,
+               w.customer_id    as customerId,
+               w.asset_id       as assetId,
+               w.order_type     as orderType,
+               w.title          as title,
+               w.description    as description,
+               w.priority       as priority,
+               w.assigned_to    as assignedTo,
+               w.status         as status,
+               w.sla_deadline   as slaDeadline,
+               w.contact_name   as contactName,
+               w.contact_phone  as contactPhone,
+               w.contact_address as contactAddress,
+               w.complete_time  as completeTime,
+               w.del_flag       as delFlag,
+               w.create_by     as createBy,
+               w.create_time   as createTime,
+               w.update_by     as updateBy,
+               w.update_time   as updateTime,
+               a.asset_name     as assetName,
+               a.asset_code     as assetCode,
+               a.brand          as assetBrand,
+               a.model          as assetModel
+        from zw_work_order w
+        left join zw_asset a on w.asset_id = a.asset_id and a.del_flag = '0'
+        <where>
+            w.del_flag = '0'
+            <if test="status != null and status != ''">
+                and w.status = #{status}
+            </if>
+            <if test="orderType != null and orderType != ''">
+                and w.order_type = #{orderType}
+            </if>
+            <if test="assetId != null">
+                and w.asset_id = #{assetId}
+            </if>
+            <if test="customerId != null">
+                and w.customer_id = #{customerId}
+            </if>
+            <if test="orderNo != null and orderNo != ''">
+                and w.order_no like concat('%', #{orderNo}, '%')
+            </if>
+        </where>
+        order by w.create_time desc
+    </select>
+
+    <select id="selectZwCustomerWorkOrderCount" resultType="int">
+        select count(1)
+        from zw_work_order w
+        left join zw_asset a on w.asset_id = a.asset_id and a.del_flag = '0'
+        <where>
+            w.del_flag = '0'
+            <if test="status != null and status != ''">
+                and w.status = #{status}
+            </if>
+            <if test="orderType != null and orderType != ''">
+                and w.order_type = #{orderType}
+            </if>
+            <if test="assetId != null">
+                and w.asset_id = #{assetId}
+            </if>
+            <if test="customerId != null">
+                and w.customer_id = #{customerId}
+            </if>
+            <if test="orderNo != null and orderNo != ''">
+                and w.order_no like concat('%', #{orderNo}, '%')
+            </if>
+        </where>
+    </select>
+
+</mapper>

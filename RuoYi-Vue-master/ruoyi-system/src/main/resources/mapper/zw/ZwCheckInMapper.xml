@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.zw.mapper.ZwCheckInMapper">
+
+    <resultMap type="com.ruoyi.zw.domain.ZwCheckIn" id="ZwCheckInResult">
+        <id property="checkId" column="check_id"/>
+        <result property="workOrderId" column="work_order_id"/>
+        <result property="engineerId" column="engineer_id"/>
+        <result property="checkType" column="check_type"/>
+        <result property="latitude" column="latitude"/>
+        <result property="longitude" column="longitude"/>
+        <result property="address" column="address"/>
+        <result property="photoUrl" column="photo_url"/>
+        <result property="checkTime" column="check_time"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="engineerName" column="engineer_name"/>
+        <result property="orderNo" column="order_no"/>
+    </resultMap>
+
+    <sql id="selectZwCheckInVo">
+        select c.check_id, c.work_order_id, c.engineer_id, c.check_type, c.latitude, c.longitude,
+               c.address, c.photo_url, c.check_time, c.del_flag, c.create_by, c.create_time,
+               u.nick_name as engineer_name,
+               w.order_no
+        from zw_check_in c
+        left join sys_user u on c.engineer_id = u.user_id
+        left join zw_work_order w on c.work_order_id = w.work_order_id
+    </sql>
+
+    <select id="selectZwCheckInList" resultMap="ZwCheckInResult">
+        <include refid="selectZwCheckInVo"/>
+        <where>
+            <if test="workOrderId != null">and c.work_order_id = #{workOrderId}</if>
+            <if test="engineerId != null">and c.engineer_id = #{engineerId}</if>
+            <if test="checkType != null and checkType != ''">and c.check_type = #{checkType}</if>
+            and c.del_flag = '0'
+        </where>
+        order by c.check_time desc
+    </select>
+
+    <select id="selectZwCheckInById" resultMap="ZwCheckInResult">
+        <include refid="selectZwCheckInVo"/>
+        where c.check_id = #{checkId} and c.del_flag = '0'
+    </select>
+
+    <select id="selectCheckInByWorkOrderId" resultMap="ZwCheckInResult">
+        <include refid="selectZwCheckInVo"/>
+        where c.work_order_id = #{workOrderId} and c.del_flag = '0'
+        order by c.check_time desc
+    </select>
+
+    <insert id="insertZwCheckIn" useGeneratedKeys="true" keyProperty="checkId">
+        insert into zw_check_in
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            work_order_id,
+            engineer_id,
+            <if test="checkType != null">check_type,</if>
+            <if test="latitude != null">latitude,</if>
+            <if test="longitude != null">longitude,</if>
+            <if test="address != null">address,</if>
+            <if test="photoUrl != null">photo_url,</if>
+            check_time,
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            create_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            coalesce(#{workOrderId}, 0),
+            #{engineerId},
+            <if test="checkType != null">#{checkType},</if>
+            <if test="latitude != null">#{latitude},</if>
+            <if test="longitude != null">#{longitude},</if>
+            <if test="address != null">#{address},</if>
+            <if test="photoUrl != null">#{photoUrl},</if>
+            sysdate(),
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            sysdate(),
+        </trim>
+    </insert>
+
+    <update id="updateZwCheckIn">
+        update zw_check_in
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="workOrderId != null">work_order_id = #{workOrderId},</if>
+            <if test="engineerId != null">engineer_id = #{engineerId},</if>
+            <if test="checkType != null">check_type = #{checkType},</if>
+            <if test="latitude != null">latitude = #{latitude},</if>
+            <if test="longitude != null">longitude = #{longitude},</if>
+            <if test="address != null">address = #{address},</if>
+            <if test="photoUrl != null">photo_url = #{photoUrl},</if>
+        </trim>
+        where check_id = #{checkId} and del_flag = '0'
+    </update>
+
+    <update id="deleteZwCheckInByIds">
+        update zw_check_in set del_flag = '2' where check_id in
+        <foreach item="checkId" collection="array" open="(" separator="," close=")">
+            #{checkId}
+        </foreach>
+    </update>
+
+    <select id="selectByEngineerAndDate" resultMap="ZwCheckInResult">
+        <include refid="selectZwCheckInVo"/>
+        where c.del_flag = '0'
+          and c.engineer_id = #{engineerId}
+          and date(c.check_time) = #{date}
+        order by c.check_time asc
+    </select>
+
+</mapper>

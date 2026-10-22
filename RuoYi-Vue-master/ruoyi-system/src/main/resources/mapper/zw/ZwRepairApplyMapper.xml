@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.zw.mapper.ZwRepairApplyMapper">
+
+    <resultMap type="com.ruoyi.zw.domain.ZwRepairApply" id="ZwRepairApplyResult">
+        <id     property="applyId"          column="apply_id"           />
+        <result property="customerId"       column="customer_id"         />
+        <result property="assetId"          column="asset_id"            />
+        <result property="applyTitle"       column="apply_title"         />
+        <result property="faultDesc"        column="fault_desc"          />
+        <result property="faultPhotos"      column="fault_photos"        />
+        <result property="faultVideos"      column="fault_videos"        />
+        <result property="contactName"      column="contact_name"        />
+        <result property="contactPhone"     column="contact_phone"       />
+        <result property="expectedTime"     column="expected_time"       />
+        <result property="status"           column="status"              />
+        <result property="workOrderId"      column="work_order_id"       />
+        <result property="delFlag"          column="del_flag"            />
+        <result property="createBy"         column="create_by"           />
+        <result property="createTime"       column="create_time"         />
+        <result property="updateBy"         column="update_by"           />
+        <result property="updateTime"       column="update_time"         />
+        <result property="customerName"     column="customer_name"       />
+        <result property="assetName"        column="asset_name"          />
+        <result property="orderNo"          column="order_no"            />
+    </resultMap>
+
+    <sql id="selectZwRepairApplyVo">
+        select r.apply_id, r.customer_id, r.asset_id, r.apply_title, r.fault_desc,
+               r.fault_photos, r.fault_videos, r.contact_name, r.contact_phone,
+               r.expected_time, r.status, r.work_order_id, r.del_flag,
+               r.create_by, r.create_time, r.update_by, r.update_time,
+               d.dept_name as customer_name,
+               a.asset_name,
+               w.order_no
+        from zw_repair_apply r
+        left join sys_dept d on r.customer_id = d.dept_id
+        left join zw_asset a on r.asset_id = a.asset_id
+        left join zw_work_order w on r.work_order_id = w.work_order_id
+    </sql>
+
+    <select id="selectZwRepairApplyList" parameterType="com.ruoyi.zw.domain.ZwRepairApply" resultMap="ZwRepairApplyResult">
+        <include refid="selectZwRepairApplyVo"/>
+        <where>
+            r.del_flag = '0'
+            <if test="applyTitle != null and applyTitle != ''">
+                and r.apply_title like concat('%', #{applyTitle}, '%')
+            </if>
+            <if test="customerId != null">
+                and r.customer_id = #{customerId}
+            </if>
+            <if test="assetId != null">
+                and r.asset_id = #{assetId}
+            </if>
+            <if test="status != null and status != ''">
+                and r.status = #{status}
+            </if>
+            <if test="contactName != null and contactName != ''">
+                and r.contact_name like concat('%', #{contactName}, '%')
+            </if>
+            <if test="contactPhone != null and contactPhone != ''">
+                and r.contact_phone like concat('%', #{contactPhone}, '%')
+            </if>
+            <if test="customerName != null and customerName != ''">
+                and d.dept_name like concat('%', #{customerName}, '%')
+            </if>
+        </where>
+        order by r.create_time desc
+    </select>
+
+    <select id="selectZwRepairApplyListByCustomerId" resultMap="ZwRepairApplyResult">
+        <include refid="selectZwRepairApplyVo"/>
+        where r.del_flag = '0' and r.customer_id = #{customerId}
+        order by r.create_time desc
+    </select>
+
+    <select id="selectZwRepairApplyById" parameterType="Long" resultMap="ZwRepairApplyResult">
+        <include refid="selectZwRepairApplyVo"/>
+        where r.apply_id = #{applyId} and r.del_flag = '0'
+    </select>
+
+    <insert id="insertZwRepairApply" parameterType="com.ruoyi.zw.domain.ZwRepairApply" useGeneratedKeys="true" keyProperty="applyId">
+        insert into zw_repair_apply
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="customerId != null">customer_id,</if>
+            <if test="assetId != null">asset_id,</if>
+            <if test="applyTitle != null and applyTitle != ''">apply_title,</if>
+            <if test="faultDesc != null">fault_desc,</if>
+            <if test="faultPhotos != null">fault_photos,</if>
+            <if test="faultVideos != null">fault_videos,</if>
+            <if test="contactName != null">contact_name,</if>
+            <if test="contactPhone != null">contact_phone,</if>
+            <if test="expectedTime != null">expected_time,</if>
+            <if test="status != null and status != ''">status,</if>
+            <if test="workOrderId != null">work_order_id,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            create_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="customerId != null">#{customerId},</if>
+            <if test="assetId != null">#{assetId},</if>
+            <if test="applyTitle != null and applyTitle != ''">#{applyTitle},</if>
+            <if test="faultDesc != null">#{faultDesc},</if>
+            <if test="faultPhotos != null">#{faultPhotos},</if>
+            <if test="faultVideos != null">#{faultVideos},</if>
+            <if test="contactName != null">#{contactName},</if>
+            <if test="contactPhone != null">#{contactPhone},</if>
+            <if test="expectedTime != null">#{expectedTime},</if>
+            <if test="status != null and status != ''">#{status},</if>
+            <if test="workOrderId != null">#{workOrderId},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            sysdate(),
+        </trim>
+    </insert>
+
+    <update id="updateZwRepairApply" parameterType="com.ruoyi.zw.domain.ZwRepairApply">
+        update zw_repair_apply
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="applyTitle != null and applyTitle != ''">apply_title = #{applyTitle},</if>
+            <if test="faultDesc != null">fault_desc = #{faultDesc},</if>
+            <if test="faultPhotos != null">fault_photos = #{faultPhotos},</if>
+            <if test="faultVideos != null">fault_videos = #{faultVideos},</if>
+            <if test="contactName != null">contact_name = #{contactName},</if>
+            <if test="contactPhone != null">contact_phone = #{contactPhone},</if>
+            <if test="expectedTime != null">expected_time = #{expectedTime},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="workOrderId != null">work_order_id = #{workOrderId},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            update_time = sysdate(),
+        </trim>
+        where apply_id = #{applyId}
+    </update>
+
+    <update id="updateStatusById">
+        update zw_repair_apply set status = #{status}, update_time = sysdate()
+        where apply_id = #{applyId}
+    </update>
+
+    <update id="updateStatusByWorkOrderId">
+        update zw_repair_apply set status = #{status}, update_time = sysdate()
+        where work_order_id = #{workOrderId}
+    </update>
+
+    <update id="deleteZwRepairApplyByIds">
+        update zw_repair_apply set del_flag = '2' where apply_id in
+        <foreach item="applyId" collection="array" open="(" separator="," close=")">
+            #{applyId}
+        </foreach>
+    </update>
+
+    <select id="selectZwRepairApplyListForExport" parameterType="com.ruoyi.zw.domain.ZwRepairApply" resultMap="ZwRepairApplyResult">
+        <include refid="selectZwRepairApplyVo"/>
+        <where>
+            r.del_flag = '0'
+            <if test="applyTitle != null and applyTitle != ''">
+                and r.apply_title like concat('%', #{applyTitle}, '%')
+            </if>
+            <if test="customerId != null">
+                and r.customer_id = #{customerId}
+            </if>
+            <if test="assetId != null">
+                and r.asset_id = #{assetId}
+            </if>
+            <if test="status != null and status != ''">
+                and r.status = #{status}
+            </if>
+            <if test="contactName != null and contactName != ''">
+                and r.contact_name like concat('%', #{contactName}, '%')
+            </if>
+            <if test="contactPhone != null and contactPhone != ''">
+                and r.contact_phone like concat('%', #{contactPhone}, '%')
+            </if>
+            <if test="customerName != null and customerName != ''">
+                and d.dept_name like concat('%', #{customerName}, '%')
+            </if>
+        </where>
+        order by r.create_time desc
+    </select>
+
+</mapper>

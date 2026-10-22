@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.zw.mapper.ZwContractAssetRelationMapper">
+
+    <resultMap type="com.ruoyi.zw.domain.ContractAssetRelation" id="ContractAssetRelationResult">
+        <id     property="relationId"   column="id"          />
+        <result property="contractId"    column="contract_id"/>
+        <result property="assetId"       column="asset_id"   />
+        <result property="createTime"    column="create_time"/>
+    </resultMap>
+
+    <sql id="selectContractAssetRelationVo">
+        select id, contract_id, asset_id, create_time
+        from contract_asset_relations
+    </sql>
+
+    <select id="selectZwContractAssetRelationList" parameterType="com.ruoyi.zw.domain.ContractAssetRelation" resultMap="ContractAssetRelationResult">
+        <include refid="selectContractAssetRelationVo"/>
+        <where>
+            <if test="contractId != null">
+                and contract_id = #{contractId}
+            </if>
+            <if test="assetId != null">
+                and asset_id = #{assetId}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectAssetIdsByContractId" parameterType="Long" resultType="Long">
+        select asset_id from contract_asset_relations where contract_id = #{contractId}
+    </select>
+
+    <select id="selectContractIdsByAssetId" parameterType="Long" resultType="Long">
+        select contract_id from contract_asset_relations where asset_id = #{assetId}
+    </select>
+
+    <insert id="insertZwContractAssetRelation" parameterType="com.ruoyi.zw.domain.ContractAssetRelation" useGeneratedKeys="true" keyProperty="relationId">
+        insert into contract_asset_relations
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="contractId != null">contract_id,</if>
+            <if test="assetId != null">asset_id,</if>
+            create_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="contractId != null">#{contractId},</if>
+            <if test="assetId != null">#{assetId},</if>
+            sysdate(),
+        </trim>
+    </insert>
+
+    <update id="deleteZwContractAssetRelationByIds">
+        delete from contract_asset_relations where id in
+        <foreach item="relationId" collection="array" open="(" separator="," close=")">
+            #{relationId}
+        </foreach>
+    </update>
+
+    <delete id="deleteByContractId" parameterType="Long">
+        delete from contract_asset_relations where contract_id = #{contractId}
+    </delete>
+
+    <delete id="deleteByAssetId" parameterType="Long">
+        delete from contract_asset_relations where asset_id = #{assetId}
+    </delete>
+
+</mapper>

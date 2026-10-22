@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.zw.mapper.ZwDailyReportMapper">
+
+    <resultMap type="com.ruoyi.zw.domain.ZwDailyReport" id="ZwDailyReportResult">
+        <id property="reportId" column="report_id"/>
+        <result property="reportDate" column="report_date"/>
+        <result property="engineerId" column="engineer_id"/>
+        <result property="reportTitle" column="report_title"/>
+        <result property="reportContent" column="report_content"/>
+        <result property="workOrderCount" column="work_order_count"/>
+        <result property="inspectionCount" column="inspection_count"/>
+        <result property="voiceSummary" column="voice_summary"/>
+        <result property="status" column="status"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="engineerName" column="engineer_name"/>
+    </resultMap>
+
+    <sql id="selectZwDailyReportVo">
+        select r.report_id, r.report_date, r.engineer_id, r.report_title, r.report_content,
+               r.work_order_count, r.inspection_count, r.voice_summary, r.status, r.del_flag,
+               r.create_by, r.create_time, r.update_by, r.update_time,
+               u.nick_name as engineer_name
+        from zw_daily_report r
+        left join sys_user u on r.engineer_id = u.user_id
+    </sql>
+
+    <select id="selectZwDailyReportList" resultMap="ZwDailyReportResult">
+        <include refid="selectZwDailyReportVo"/>
+        <where>
+            <if test="reportDate != null and reportDate != ''">and r.report_date = #{reportDate}</if>
+            <if test="engineerId != null">and r.engineer_id = #{engineerId}</if>
+            <if test="status != null and status != ''">and r.status = #{status}</if>
+            and r.del_flag = '0'
+        </where>
+        order by r.report_date desc, r.create_time desc
+    </select>
+
+    <select id="selectZwDailyReportById" resultMap="ZwDailyReportResult">
+        <include refid="selectZwDailyReportVo"/>
+        where r.report_id = #{reportId} and r.del_flag = '0'
+    </select>
+
+    <insert id="insertZwDailyReport" useGeneratedKeys="true" keyProperty="reportId">
+        insert into zw_daily_report
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="reportDate != null">report_date,</if>
+            <if test="engineerId != null">engineer_id,</if>
+            <if test="reportTitle != null">report_title,</if>
+            <if test="reportContent != null">report_content,</if>
+            <if test="workOrderCount != null">work_order_count,</if>
+            <if test="inspectionCount != null">inspection_count,</if>
+            <if test="voiceSummary != null">voice_summary,</if>
+            <if test="status != null">status,</if>
+            del_flag, create_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="reportDate != null">#{reportDate},</if>
+            <if test="engineerId != null">#{engineerId},</if>
+            <if test="reportTitle != null">#{reportTitle},</if>
+            <if test="reportContent != null">#{reportContent},</if>
+            <if test="workOrderCount != null">#{workOrderCount},</if>
+            <if test="inspectionCount != null">#{inspectionCount},</if>
+            <if test="voiceSummary != null">#{voiceSummary},</if>
+            <if test="status != null">#{status},</if>
+            '0', now(),
+        </trim>
+    </insert>
+
+    <update id="updateZwDailyReport">
+        update zw_daily_report
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="reportDate != null">report_date = #{reportDate},</if>
+            <if test="engineerId != null">engineer_id = #{engineerId},</if>
+            <if test="reportTitle != null">report_title = #{reportTitle},</if>
+            <if test="reportContent != null">report_content = #{reportContent},</if>
+            <if test="workOrderCount != null">work_order_count = #{workOrderCount},</if>
+            <if test="inspectionCount != null">inspection_count = #{inspectionCount},</if>
+            <if test="voiceSummary != null">voice_summary = #{voiceSummary},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            update_time = sysdate(),
+        </trim>
+        where report_id = #{reportId} and del_flag = '0'
+    </update>
+
+    <update id="deleteZwDailyReportByIds">
+        update zw_daily_report set del_flag = '2' where report_id in
+        <foreach item="reportId" collection="array" open="(" separator="," close=")">
+            #{reportId}
+        </foreach>
+    </update>
+
+</mapper>

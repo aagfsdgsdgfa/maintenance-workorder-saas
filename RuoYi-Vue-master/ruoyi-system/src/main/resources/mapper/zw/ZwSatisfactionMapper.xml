@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.zw.mapper.ZwSatisfactionMapper">
+
+    <resultMap type="com.ruoyi.zw.domain.ZwSatisfaction" id="ZwSatisfactionResult">
+        <id property="evalId" column="eval_id"/>
+        <result property="workOrderId" column="work_order_id"/>
+        <result property="customerId" column="customer_id"/>
+        <result property="responseScore" column="response_score"/>
+        <result property="techScore" column="tech_score"/>
+        <result property="overallScore" column="overall_score"/>
+        <result property="comment" column="comment"/>
+        <result property="evalTime" column="eval_time"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="orderNo" column="order_no"/>
+        <result property="customerName" column="customer_name"/>
+    </resultMap>
+
+    <sql id="selectZwSatisfactionVo">
+        select s.eval_id, s.work_order_id, s.customer_id, s.response_score, s.tech_score,
+               s.overall_score, s.comment, s.eval_time, s.del_flag, s.create_by, s.create_time,
+               w.order_no,
+               d.dept_name as customer_name
+        from zw_satisfaction s
+        left join zw_work_order w on s.work_order_id = w.work_order_id
+        left join sys_dept d on s.customer_id = d.dept_id
+    </sql>
+
+    <select id="selectZwSatisfactionList" resultMap="ZwSatisfactionResult">
+        <include refid="selectZwSatisfactionVo"/>
+        <where>
+            <if test="workOrderId != null">and s.work_order_id = #{workOrderId}</if>
+            <if test="customerId != null">and s.customer_id = #{customerId}</if>
+            and s.del_flag = '0'
+        </where>
+        order by s.eval_time desc
+    </select>
+
+    <select id="selectZwSatisfactionById" resultMap="ZwSatisfactionResult">
+        <include refid="selectZwSatisfactionVo"/>
+        where s.eval_id = #{evalId} and s.del_flag = '0'
+    </select>
+
+    <insert id="insertZwSatisfaction" useGeneratedKeys="true" keyProperty="evalId">
+        insert into zw_satisfaction
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="workOrderId != null">work_order_id,</if>
+            <if test="customerId != null">customer_id,</if>
+            <if test="responseScore != null">response_score,</if>
+            <if test="techScore != null">tech_score,</if>
+            <if test="overallScore != null">overall_score,</if>
+            <if test="comment != null">comment,</if>
+            <if test="evalTime != null">eval_time,</if>
+            del_flag, create_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="workOrderId != null">#{workOrderId},</if>
+            <if test="customerId != null">#{customerId},</if>
+            <if test="responseScore != null">#{responseScore},</if>
+            <if test="techScore != null">#{techScore},</if>
+            <if test="overallScore != null">#{overallScore},</if>
+            <if test="comment != null">#{comment},</if>
+            <if test="evalTime != null">#{evalTime},</if>
+            '0', now(),
+        </trim>
+    </insert>
+
+    <update id="updateZwSatisfaction">
+        update zw_satisfaction
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="workOrderId != null">work_order_id = #{workOrderId},</if>
+            <if test="customerId != null">customer_id = #{customerId},</if>
+            <if test="responseScore != null">response_score = #{responseScore},</if>
+            <if test="techScore != null">tech_score = #{techScore},</if>
+            <if test="overallScore != null">overall_score = #{overallScore},</if>
+            <if test="comment != null">comment = #{comment},</if>
+            <if test="evalTime != null">eval_time = #{evalTime},</if>
+        </trim>
+        where eval_id = #{evalId} and del_flag = '0'
+    </update>
+
+    <update id="deleteZwSatisfactionByIds">
+        update zw_satisfaction set del_flag = '2' where eval_id in
+        <foreach item="evalId" collection="array" open="(" separator="," close=")">
+            #{evalId}
+        </foreach>
+    </update>
+
+    <select id="selectSatisfactionByWorkOrderId" resultMap="ZwSatisfactionResult">
+        <include refid="selectZwSatisfactionVo"/>
+        where s.work_order_id = #{workOrderId} and s.del_flag = '0'
+        limit 1
+    </select>
+
+</mapper>

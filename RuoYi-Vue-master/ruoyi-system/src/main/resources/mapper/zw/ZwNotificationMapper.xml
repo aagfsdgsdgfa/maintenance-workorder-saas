@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.zw.mapper.ZwNotificationMapper">
+
+    <resultMap type="com.ruoyi.zw.domain.ZwNotification" id="ZwNotificationResult">
+        <id     property="notifId"    column="notif_id"/>
+        <result property="userId"     column="user_id"/>
+        <result property="title"      column="title"/>
+        <result property="content"    column="content"/>
+        <result property="type"       column="type"/>
+        <result property="relatedId"  column="related_id"/>
+        <result property="isRead"     column="is_read"/>
+        <result property="readTime"   column="read_time"/>
+        <result property="delFlag"    column="del_flag"/>
+        <result property="createBy"  column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="customerId" column="customer_id"/>
+    </resultMap>
+
+    <sql id="selectZwNotificationVo">
+        select notif_id, user_id, title, content, type, related_id, is_read,
+               read_time, del_flag, create_by, create_time, customer_id
+        from zw_notification
+    </sql>
+
+    <select id="selectZwNotificationList" resultMap="ZwNotificationResult">
+        <include refid="selectZwNotificationVo"/>
+        <where>
+            <if test="customerId != null">and customer_id = #{customerId}</if>
+            <if test="userId != null">and user_id = #{userId}</if>
+            <if test="customerId == null and userId == null">
+              and (customer_id is null or user_id is null)
+            </if>
+            <if test="type != null and type != ''">and type = #{type}</if>
+            <if test="isRead != null and isRead != ''">and is_read = #{isRead}</if>
+            and del_flag = '0'
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectZwNotificationById" resultMap="ZwNotificationResult">
+        <include refid="selectZwNotificationVo"/>
+        where notif_id = #{notifId} and del_flag = '0'
+    </select>
+
+    <insert id="insertZwNotification" useGeneratedKeys="true" keyProperty="notifId">
+        insert into zw_notification
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="customerId != null">customer_id,</if>
+            <if test="title != null">title,</if>
+            <if test="content != null">content,</if>
+            <if test="type != null">type,</if>
+            <if test="relatedId != null">related_id,</if>
+            <if test="isRead != null">is_read,</if>
+            del_flag, create_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="customerId != null">#{customerId},</if>
+            <if test="title != null">#{title},</if>
+            <if test="content != null">#{content},</if>
+            <if test="type != null">#{type},</if>
+            <if test="relatedId != null">#{relatedId},</if>
+            <if test="isRead != null">#{isRead},</if>
+            '0', now(),
+        </trim>
+    </insert>
+
+    <update id="updateReadStatus">
+        update zw_notification set is_read = '1', read_time = now()
+        where notif_id = #{notifId}
+          and del_flag = '0'
+          <if test="customerId != null">and customer_id = #{customerId}</if>
+          <if test="userId != null">and user_id = #{userId}</if>
+          <if test="customerId == null and userId == null">
+            and (customer_id is null or user_id is null)
+          </if>
+    </update>
+
+    <update id="deleteZwNotificationByIds">
+        update zw_notification set del_flag = '2' where notif_id in
+        <foreach item="notifId" collection="array" open="(" separator="," close=")">
+            #{notifId}
+        </foreach>
+    </update>
+
+    <update id="updateAllReadStatus">
+        update zw_notification set is_read = '1', read_time = now()
+        where del_flag = '0' and is_read = '0'
+          <if test="customerId != null">and customer_id = #{customerId}</if>
+          <if test="userId != null">and user_id = #{userId}</if>
+          <if test="customerId == null and userId == null">
+            and (customer_id is null or user_id is null)
+          </if>
+    </update>
+
+    <select id="countUnread" resultType="long">
+        select count(*) from zw_notification
+        where del_flag = '0' and is_read = '0'
+          <if test="customerId != null">and customer_id = #{customerId}</if>
+          <if test="userId != null">and user_id = #{userId}</if>
+          <if test="customerId == null and userId == null">
+            and (customer_id is null or user_id is null)
+          </if>
+    </select>
+
+</mapper>

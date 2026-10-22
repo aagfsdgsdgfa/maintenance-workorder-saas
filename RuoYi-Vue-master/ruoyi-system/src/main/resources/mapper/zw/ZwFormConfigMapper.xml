@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.zw.mapper.ZwFormConfigMapper">
+
+    <resultMap type="com.ruoyi.zw.domain.ZwFormConfig" id="ZwFormConfigResult">
+        <id property="configId" column="config_id"/>
+        <result property="configName" column="config_name"/>
+        <result property="assetType" column="asset_type"/>
+        <result property="brand" column="brand"/>
+        <result property="formSchema" column="form_schema"/>
+        <result property="status" column="status"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="selectZwFormConfigVo">
+        select config_id, config_name, asset_type, brand, form_schema, status,
+               del_flag, create_by, create_time, update_by, update_time
+        from zw_form_config
+    </sql>
+
+    <select id="selectZwFormConfigList" resultMap="ZwFormConfigResult">
+        <include refid="selectZwFormConfigVo"/>
+        <where>
+            <if test="configName != null and configName != ''">and config_name like concat('%', #{configName}, '%')</if>
+            <if test="assetType != null and assetType != ''">and asset_type = #{assetType}</if>
+            <if test="brand != null and brand != ''">and brand = #{brand}</if>
+            <if test="status != null and status != ''">and status = #{status}</if>
+            and del_flag = '0'
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectZwFormConfigById" resultMap="ZwFormConfigResult">
+        <include refid="selectZwFormConfigVo"/>
+        where config_id = #{configId} and del_flag = '0'
+    </select>
+
+    <insert id="insertZwFormConfig" useGeneratedKeys="true" keyProperty="configId">
+        insert into zw_form_config
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="configName != null">config_name,</if>
+            <if test="assetType != null">asset_type,</if>
+            <if test="brand != null">brand,</if>
+            <if test="formSchema != null">form_schema,</if>
+            <if test="status != null">status,</if>
+            del_flag, create_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="configName != null">#{configName},</if>
+            <if test="assetType != null">#{assetType},</if>
+            <if test="brand != null">#{brand},</if>
+            <if test="formSchema != null">#{formSchema},</if>
+            <if test="status != null">#{status},</if>
+            '0', now(),
+        </trim>
+    </insert>
+
+    <update id="updateZwFormConfig">
+        update zw_form_config
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="configName != null">config_name = #{configName},</if>
+            <if test="assetType != null">asset_type = #{assetType},</if>
+            <if test="brand != null">brand = #{brand},</if>
+            <if test="formSchema != null">form_schema = #{formSchema},</if>
+            <if test="status != null">status = #{status},</if>
+        </trim>
+        where config_id = #{configId} and del_flag = '0'
+    </update>
+
+    <update id="deleteZwFormConfigByIds">
+        update zw_form_config set del_flag = '2' where config_id in
+        <foreach item="configId" collection="array" open="(" separator="," close=")">
+            #{configId}
+        </foreach>
+    </update>
+
+    <select id="selectByAssetTypeAndBrand" resultMap="ZwFormConfigResult">
+        <include refid="selectZwFormConfigVo"/>
+        where del_flag = '0' and status = '0'
+          and (
+            (asset_type = #{assetType} and brand = #{brand})
+            or (asset_type = #{assetType} and (brand is null or brand = ''))
+          )
+        order by
+          case when brand = #{brand} then 0 else 1 end
+        limit 1
+    </select>
+
+</mapper>

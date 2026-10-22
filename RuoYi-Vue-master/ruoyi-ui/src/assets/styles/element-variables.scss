@@ -1,0 +1,166 @@
+/**
+ * 智维云服 - Element UI 主题色定制
+ * 主色：深藏蓝 #1B3A6B，强调色：天蓝 #0EA5E9
+ */
+
+/* theme color */
+$--color-primary: #1B3A6B;
+$--color-success: #3B82F6;
+$--color-warning: #F59E0B;
+$--color-danger: #EF4444;
+$--color-info: #6B7A99;
+
+$--button-font-weight: 500;
+
+$--border-color-light: #E2E8F0;
+$--border-color-lighter: #F1F5F9;
+$--border-radius-base: 8px;
+$--border-radius-small: 6px;
+
+$--table-border: 1px solid #E2E8F0;
+
+/* form label */
+$--form-label-font-size: 13px;
+
+/* icon font path, required */
+$--font-path: '~element-ui/lib/theme-chalk/fonts';
+
+@import "~element-ui/packages/theme-chalk/src/index";
+
+// the :export directive is the magic sauce for webpack
+// https://www.bluematador.com/blog/how-to-share-variables-between-js-and-sass
+:export {
+  theme: $--color-primary;
+}
+
+/* ========== Global overrides ========== */
+
+/* dialog */
+.el-dialog {
+  border-radius: 12px !important;
+  overflow: hidden;
+  .el-dialog__header {
+    background: linear-gradient(135deg, #1B3A6B, #2155A4);
+    padding: 16px 20px !important;
+    margin: 0;
+    .el-dialog__title {
+      color: #fff;
+      font-weight: 600;
+      font-size: 15px;
+    }
+    .el-dialog__headerbtn {
+      top: 16px;
+      .el-dialog__close {
+        color: rgba(255,255,255,0.8);
+        &:hover { color: #fff; }
+      }
+    }
+  }
+  .el-dialog__body {
+    padding: 20px !important;
+  }
+}
+
+/* button */
+.el-button {
+  border-radius: 6px !important;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+.el-button--primary {
+  background-color: #1B3A6B !important;
+  border-color: #1B3A6B !important;
+  &:hover, &:focus {
+    background-color: #2155A4 !important;
+    border-color: #2155A4 !important;
+  }
+}
+.el-button--primary.is-plain {
+  background-color: rgba(27,58,107,0.06) !important;
+  border-color: rgba(27,58,107,0.3) !important;
+  color: #1B3A6B !important;
+  &:hover, &:focus {
+    background-color: rgba(27,58,107,0.12) !important;
+    border-color: #1B3A6B !important;
+    color: #1B3A6B !important;
+  }
+}
+.el-button--text {
+  color: #1B3A6B !important;
+  &:hover { color: #2d6bc4 !important; }
+}
+
+/* input / select */
+.el-input__inner {
+  border-radius: 6px;
+  &:focus {
+    border-color: #1B3A6B;
+    box-shadow: 0 0 0 2px rgba(27, 58, 107, 0.1);
+  }
+}
+
+/* tag */
+.el-tag {
+  border-radius: 4px;
+}
+
+/* pagination */
+.el-pagination {
+  .el-pager li {
+    border-radius: 6px;
+    &.active {
+      background-color: #1B3A6B;
+    }
+    &:hover:not(.active):not(.more) {
+      color: #1B3A6B;
+    }
+  }
+  .btn-prev, .btn-next {
+    border-radius: 6px;
+  }
+}
+
+/* card */
+.el-card {
+  border-radius: 10px !important;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 2px 12px rgba(27,58,107,0.06) !important;
+  .el-card__header {
+    border-bottom: 1px solid #F1F5F9;
+    background: #FAFBFF;
+  }
+}
+
+/* dropdown */
+.el-dropdown-menu__item:hover {
+  background-color: #F0F5FF !important;
+  color: #1B3A6B !important;
+}
+
+/* form label */
+.el-form-item__label {
+  color: #4B5563;
+  font-weight: 500;
+  font-size: 13px;
+}
+
+/* drawer */
+.el-drawer {
+  &__header {
+    border-bottom: 1px solid #F1F5F9;
+    color: #1B3A6B;
+    font-weight: 600;
+    font-size: 15px;
+  }
+}
+
+/* message / notification */
+.el-message {
+  border-radius: 8px !important;
+  .el-message__content { font-size: 13px; }
+}
+
+/* tooltip */
+.el-tooltip__popper {
+  font-size: 12px;
+}

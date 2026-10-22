@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.zw.mapper.ZwFaultRecordMapper">
+
+    <resultMap type="com.ruoyi.zw.domain.ZwFaultRecord" id="ZwFaultRecordResult">
+        <id property="faultId" column="fault_id"/>
+        <result property="customerId" column="customer_id"/>
+        <result property="assetId" column="asset_id"/>
+        <result property="workOrderId" column="work_order_id"/>
+        <result property="faultDesc" column="fault_desc"/>
+        <result property="faultType" column="fault_type"/>
+        <result property="faultLevel" column="fault_level"/>
+        <result property="faultStatus" column="fault_status"/>
+        <result property="faultTime" column="fault_time"/>
+        <result property="resolveTime" column="resolve_time"/>
+        <result property="resolution" column="resolution"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="customerName" column="customer_name"/>
+        <result property="assetName" column="asset_name"/>
+        <result property="orderNo" column="order_no"/>
+    </resultMap>
+
+    <sql id="selectZwFaultRecordVo">
+        select f.fault_id, f.customer_id, f.asset_id, f.work_order_id, f.fault_desc, f.fault_type, f.fault_level,
+               f.fault_status, f.fault_time, f.resolve_time, f.resolution, f.del_flag,
+               f.create_by, f.create_time, f.update_by, f.update_time,
+               d.dept_name as customer_name,
+               a.asset_name,
+               w.order_no
+        from zw_fault_record f
+        left join sys_dept d on f.customer_id = d.dept_id
+        left join zw_asset a on f.asset_id = a.asset_id
+        left join zw_work_order w on f.work_order_id = w.work_order_id
+    </sql>
+
+    <select id="selectZwFaultRecordList" resultMap="ZwFaultRecordResult">
+        <include refid="selectZwFaultRecordVo"/>
+        <where>
+            <if test="assetId != null">and f.asset_id = #{assetId}</if>
+            <if test="workOrderId != null">and f.work_order_id = #{workOrderId}</if>
+            <if test="faultType != null and faultType != ''">and f.fault_type = #{faultType}</if>
+            <if test="faultLevel != null and faultLevel != ''">and f.fault_level = #{faultLevel}</if>
+            <if test="faultStatus != null and faultStatus != ''">and f.fault_status = #{faultStatus}</if>
+            and f.del_flag = '0'
+        </where>
+        order by f.fault_time desc
+    </select>
+
+    <select id="selectZwFaultRecordById" resultMap="ZwFaultRecordResult">
+        <include refid="selectZwFaultRecordVo"/>
+        where f.fault_id = #{faultId} and f.del_flag = '0'
+    </select>
+
+    <insert id="insertZwFaultRecord" useGeneratedKeys="true" keyProperty="faultId">
+        insert into zw_fault_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="customerId != null">customer_id,</if>
+            <if test="assetId != null">asset_id,</if>
+            <if test="workOrderId != null">work_order_id,</if>
+            <if test="faultDesc != null">fault_desc,</if>
+            <if test="faultType != null">fault_type,</if>
+            <if test="faultLevel != null">fault_level,</if>
+            <if test="faultStatus != null">fault_status,</if>
+            <if test="faultTime != null">fault_time,</if>
+            <if test="resolution != null">resolution,</if>
+            del_flag, create_by, create_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="customerId != null">#{customerId},</if>
+            <if test="assetId != null">#{assetId},</if>
+            <if test="workOrderId != null">#{workOrderId},</if>
+            <if test="faultDesc != null">#{faultDesc},</if>
+            <if test="faultType != null">#{faultType},</if>
+            <if test="faultLevel != null">#{faultLevel},</if>
+            <if test="faultStatus != null">#{faultStatus},</if>
+            <if test="faultTime != null">#{faultTime},</if>
+            <if test="resolution != null">#{resolution},</if>
+            '0', coalesce(#{createBy}, ''), now(),
+        </trim>
+    </insert>
+
+    <update id="updateZwFaultRecord">
+        update zw_fault_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="customerId != null">customer_id = #{customerId},</if>
+            <if test="assetId != null">asset_id = #{assetId},</if>
+            <if test="workOrderId != null">work_order_id = #{workOrderId},</if>
+            <if test="faultDesc != null">fault_desc = #{faultDesc},</if>
+            <if test="faultType != null">fault_type = #{faultType},</if>
+            <if test="faultLevel != null">fault_level = #{faultLevel},</if>
+            <if test="faultStatus != null">fault_status = #{faultStatus},</if>
+            <if test="faultTime != null">fault_time = #{faultTime},</if>
+            <if test="resolveTime != null">resolve_time = #{resolveTime},</if>
+            <if test="resolution != null">resolution = #{resolution},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            update_time = sysdate(),
+        </trim>
+        where fault_id = #{faultId} and del_flag = '0'
+    </update>
+
+    <update id="deleteZwFaultRecordByIds">
+        update zw_fault_record set del_flag = '2' where fault_id in
+        <foreach item="faultId" collection="array" open="(" separator="," close=")">
+            #{faultId}
+        </foreach>
+    </update>
+
+    <select id="selectFaultRecordsByWorkOrderId" resultMap="ZwFaultRecordResult">
+        <include refid="selectZwFaultRecordVo"/>
+        where f.work_order_id = #{workOrderId} and f.del_flag = '0'
+        order by f.fault_time desc
+    </select>
+
+    <select id="countToday" resultType="int">
+        select count(*) from zw_fault_record
+        where del_flag = '0'
+          and date(create_time) = curdate()
+    </select>
+
+    <select id="selectByEngineerAndDate" resultMap="ZwFaultRecordResult">
+        <include refid="selectZwFaultRecordVo"/>
+        where f.del_flag = '0'
+          and date(f.create_time) = #{date}
+          and f.create_by = #{createBy}
+        order by f.create_time desc
+    </select>
+
+</mapper>

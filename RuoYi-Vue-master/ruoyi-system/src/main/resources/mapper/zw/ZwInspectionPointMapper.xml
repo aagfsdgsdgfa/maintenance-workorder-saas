@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.zw.mapper.ZwInspectionPointMapper">
+
+    <resultMap type="com.ruoyi.zw.domain.ZwInspectionPoint" id="ZwInspectionPointResult">
+        <id     property="pointId"         column="point_id"           />
+        <result property="assetId"          column="asset_id"           />
+        <result property="pointName"        column="point_name"          />
+        <result property="pointCode"        column="point_code"          />
+        <result property="pointLocation"   column="point_location"      />
+        <result property="latitude"         column="latitude"            />
+        <result property="longitude"        column="longitude"           />
+        <result property="scanRadius"       column="scan_radius"         />
+        <result property="formConfigId"     column="form_config_id"      />
+        <result property="checkItems"      column="check_items"         />
+        <result property="status"           column="status"              />
+        <result property="delFlag"          column="del_flag"            />
+        <result property="createBy"         column="create_by"           />
+        <result property="createTime"       column="create_time"         />
+        <result property="updateBy"         column="update_by"           />
+        <result property="updateTime"       column="update_time"         />
+        <result property="assetName"        column="asset_name"          />
+        <result property="assetCode"        column="asset_code"          />
+    </resultMap>
+
+    <sql id="selectZwInspectionPointVo">
+        select p.point_id, p.asset_id, p.point_name, p.point_code, p.point_location,
+               p.latitude, p.longitude, p.scan_radius, p.form_config_id, p.check_items,
+               p.status, p.del_flag, p.create_by, p.create_time, p.update_by, p.update_time,
+               a.asset_name, a.asset_code
+        from zw_inspection_point p
+        left join zw_asset a on p.asset_id = a.asset_id
+    </sql>
+
+    <select id="selectZwInspectionPointList" parameterType="com.ruoyi.zw.domain.ZwInspectionPoint" resultMap="ZwInspectionPointResult">
+        <include refid="selectZwInspectionPointVo"/>
+        <where>
+            p.del_flag = '0'
+            <if test="assetId != null">
+                and p.asset_id = #{assetId}
+            </if>
+            <if test="pointName != null and pointName != ''">
+                and p.point_name like concat('%', #{pointName}, '%')
+            </if>
+            <if test="pointCode != null and pointCode != ''">
+                and p.point_code = #{pointCode}
+            </if>
+            <if test="status != null and status != ''">
+                and p.status = #{status}
+            </if>
+        </where>
+        order by p.create_time desc
+    </select>
+
+    <select id="selectZwInspectionPointById" parameterType="Long" resultMap="ZwInspectionPointResult">
+        <include refid="selectZwInspectionPointVo"/>
+        where p.point_id = #{pointId} and p.del_flag = '0'
+    </select>
+
+    <select id="selectZwInspectionPointByAssetId" parameterType="Long" resultMap="ZwInspectionPointResult">
+        <include refid="selectZwInspectionPointVo"/>
+        where p.asset_id = #{assetId} and p.del_flag = '0' and p.status = '0'
+        order by p.create_time asc
+    </select>
+
+    <select id="selectZwInspectionPointByCode" parameterType="String" resultMap="ZwInspectionPointResult">
+        <include refid="selectZwInspectionPointVo"/>
+        where p.point_code = #{pointCode} and p.del_flag = '0'
+    </select>
+
+    <insert id="insertZwInspectionPoint" parameterType="com.ruoyi.zw.domain.ZwInspectionPoint" useGeneratedKeys="true" keyProperty="pointId">
+        insert into zw_inspection_point
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="assetId != null">asset_id,</if>
+            <if test="pointName != null and pointName != ''">point_name,</if>
+            <if test="pointCode != null and pointCode != ''">point_code,</if>
+            <if test="pointLocation != null">point_location,</if>
+            <if test="latitude != null">latitude,</if>
+            <if test="longitude != null">longitude,</if>
+            <if test="scanRadius != null">scan_radius,</if>
+            <if test="formConfigId != null">form_config_id,</if>
+            <if test="checkItems != null">check_items,</if>
+            <if test="status != null and status != ''">status,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            create_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="assetId != null">#{assetId},</if>
+            <if test="pointName != null and pointName != ''">#{pointName},</if>
+            <if test="pointCode != null and pointCode != ''">#{pointCode},</if>
+            <if test="pointCode == null or pointCode == ''">concat('P', unix_timestamp(), floor(rand()*1000)),</if>
+            <if test="pointLocation != null">#{pointLocation},</if>
+            <if test="latitude != null">#{latitude},</if>
+            <if test="longitude != null">#{longitude},</if>
+            <if test="scanRadius != null">#{scanRadius},</if>
+            <if test="formConfigId != null">#{formConfigId},</if>
+            <if test="checkItems != null">#{checkItems},</if>
+            <if test="status != null and status != ''">#{status},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            sysdate(),
+        </trim>
+    </insert>
+
+    <update id="updateZwInspectionPoint" parameterType="com.ruoyi.zw.domain.ZwInspectionPoint">
+        update zw_inspection_point
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="assetId != null">asset_id = #{assetId},</if>
+            <if test="pointName != null and pointName != ''">point_name = #{pointName},</if>
+            <if test="pointCode != null and pointCode != ''">point_code = #{pointCode},</if>
+            <if test="pointLocation != null">point_location = #{pointLocation},</if>
+            <if test="latitude != null">latitude = #{latitude},</if>
+            <if test="longitude != null">longitude = #{longitude},</if>
+            <if test="scanRadius != null">scan_radius = #{scanRadius},</if>
+            <if test="formConfigId != null">form_config_id = #{formConfigId},</if>
+            <if test="checkItems != null">check_items = #{checkItems},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            update_time = sysdate(),
+        </trim>
+        where point_id = #{pointId}
+    </update>
+
+    <update id="updateStatusById">
+        update zw_inspection_point set status = #{status}, update_time = sysdate()
+        where point_id = #{pointId}
+    </update>
+
+    <update id="deleteZwInspectionPointByIds">
+        update zw_inspection_point set del_flag = '2' where point_id in
+        <foreach item="pointId" collection="array" open="(" separator="," close=")">
+            #{pointId}
+        </foreach>
+    </update>
+
+</mapper>

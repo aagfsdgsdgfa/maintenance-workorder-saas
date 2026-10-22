@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.zw.mapper.ZwReportExportMapper">
+
+    <resultMap type="com.ruoyi.zw.domain.ZwReportExport" id="ZwReportExportResult">
+        <id property="exportId" column="export_id"/>
+        <result property="customerId" column="customer_id"/>
+        <result property="reportType" column="report_type"/>
+        <result property="startDate" column="start_date"/>
+        <result property="endDate" column="end_date"/>
+        <result property="fileName" column="file_name"/>
+        <result property="filePath" column="file_path"/>
+        <result property="fileFormat" column="file_format"/>
+        <result property="exportStatus" column="export_status"/>
+        <result property="downloadCount" column="download_count"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="customerName" column="customer_name"/>
+    </resultMap>
+
+    <sql id="selectZwReportExportVo">
+        select e.export_id, e.customer_id, e.report_type, e.start_date, e.end_date, e.file_name,
+               e.file_path, e.file_format, e.export_status, e.download_count, e.del_flag,
+               e.create_by, e.create_time,
+               d.dept_name as customer_name
+        from zw_report_export e
+        left join sys_dept d on e.customer_id = d.dept_id
+    </sql>
+
+    <select id="selectZwReportExportList" resultMap="ZwReportExportResult">
+        <include refid="selectZwReportExportVo"/>
+        <where>
+            <if test="customerId != null">and e.customer_id = #{customerId}</if>
+            <if test="reportType != null and reportType != ''">and e.report_type = #{reportType}</if>
+            <if test="exportStatus != null and exportStatus != ''">and e.export_status = #{exportStatus}</if>
+            and e.del_flag = '0'
+        </where>
+        order by e.create_time desc
+    </select>
+
+    <select id="selectZwReportExportById" resultMap="ZwReportExportResult">
+        <include refid="selectZwReportExportVo"/>
+        where e.export_id = #{exportId} and e.del_flag = '0'
+    </select>
+
+    <insert id="insertZwReportExport" useGeneratedKeys="true" keyProperty="exportId">
+        insert into zw_report_export
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="customerId != null">customer_id,</if>
+            <if test="reportType != null">report_type,</if>
+            <if test="startDate != null">start_date,</if>
+            <if test="endDate != null">end_date,</if>
+            <if test="fileName != null">file_name,</if>
+            <if test="filePath != null">file_path,</if>
+            <if test="fileFormat != null">file_format,</if>
+            <if test="exportStatus != null">export_status,</if>
+            <if test="downloadCount != null">download_count,</if>
+            del_flag, create_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="customerId != null">#{customerId},</if>
+            <if test="reportType != null">#{reportType},</if>
+            <if test="startDate != null">#{startDate},</if>
+            <if test="endDate != null">#{endDate},</if>
+            <if test="fileName != null">#{fileName},</if>
+            <if test="filePath != null">#{filePath},</if>
+            <if test="fileFormat != null">#{fileFormat},</if>
+            <if test="exportStatus != null">#{exportStatus},</if>
+            <if test="downloadCount != null">#{downloadCount},</if>
+            '0', now(),
+        </trim>
+    </insert>
+
+    <update id="updateZwReportExport">
+        update zw_report_export
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="customerId != null">customer_id = #{customerId},</if>
+            <if test="reportType != null">report_type = #{reportType},</if>
+            <if test="startDate != null">start_date = #{startDate},</if>
+            <if test="endDate != null">end_date = #{endDate},</if>
+            <if test="fileName != null">file_name = #{fileName},</if>
+            <if test="filePath != null">file_path = #{filePath},</if>
+            <if test="fileFormat != null">file_format = #{fileFormat},</if>
+            <if test="exportStatus != null">export_status = #{exportStatus},</if>
+            <if test="downloadCount != null">download_count = #{downloadCount},</if>
+        </trim>
+        where export_id = #{exportId} and del_flag = '0'
+    </update>
+
+    <update id="deleteZwReportExportByIds">
+        update zw_report_export set del_flag = '2' where export_id in
+        <foreach item="exportId" collection="array" open="(" separator="," close=")">
+            #{exportId}
+        </foreach>
+    </update>
+
+</mapper>

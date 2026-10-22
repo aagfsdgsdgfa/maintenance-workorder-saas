@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.zw.mapper.ZwPartMapper">
+
+    <resultMap type="com.ruoyi.zw.domain.ZwPart" id="ZwPartResult">
+        <id property="partId"    column="part_id"/>
+        <result property="partName"   column="part_name"/>
+        <result property="partCode"   column="part_code"/>
+        <result property="partType"   column="part_type"/>
+        <result property="specModel"  column="spec_model"/>
+        <result property="unit"      column="unit"/>
+        <result property="unitPrice"  column="unit_price"/>
+        <result property="brand"      column="brand"/>
+        <result property="remark"     column="remark"/>
+        <result property="status"     column="status"/>
+        <result property="delFlag"   column="del_flag"/>
+        <result property="createBy"   column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy"   column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="selectZwPartVo">
+        select part_id, part_name, part_code, part_type, spec_model, unit, unit_price, brand, remark, status, del_flag, create_by, create_time, update_by, update_time
+        from zw_part
+    </sql>
+
+    <select id="selectZwPartList" resultMap="ZwPartResult">
+        <include refid="selectZwPartVo"/>
+        <where>
+            <if test="partName != null and partName != ''">and part_name like concat('%', #{partName}, '%')</if>
+            <if test="partType != null and partType != ''">and part_type = #{partType}</if>
+            <if test="status != null and status != ''">and status = #{status}</if>
+            and del_flag = '0'
+        </where>
+        order by part_id asc
+    </select>
+
+    <select id="selectZwPartById" resultMap="ZwPartResult">
+        <include refid="selectZwPartVo"/>
+        where part_id = #{partId} and del_flag = '0'
+    </select>
+
+    <insert id="insertZwPart" useGeneratedKeys="true" keyProperty="partId">
+        insert into zw_part
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="partName != null">part_name,</if>
+            <if test="partCode != null">part_code,</if>
+            <if test="partType != null">part_type,</if>
+            <if test="specModel != null">spec_model,</if>
+            <if test="unit != null">unit,</if>
+            <if test="unitPrice != null">unit_price,</if>
+            <if test="brand != null">brand,</if>
+            <if test="remark != null">remark,</if>
+            <if test="status != null">status,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="partName != null">#{partName},</if>
+            <if test="partCode != null">#{partCode},</if>
+            <if test="partType != null">#{partType},</if>
+            <if test="specModel != null">#{specModel},</if>
+            <if test="unit != null">#{unit},</if>
+            <if test="unitPrice != null">#{unitPrice},</if>
+            <if test="brand != null">#{brand},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateZwPart">
+        update zw_part
+        <trim prefix="set" suffixOverrides=",">
+            <if test="partName != null">part_name = #{partName},</if>
+            <if test="partCode != null">part_code = #{partCode},</if>
+            <if test="partType != null">part_type = #{partType},</if>
+            <if test="specModel != null">spec_model = #{specModel},</if>
+            <if test="unit != null">unit = #{unit},</if>
+            <if test="unitPrice != null">unit_price = #{unitPrice},</if>
+            <if test="brand != null">brand = #{brand},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where part_id = #{partId}
+    </update>
+
+    <delete id="deleteZwPartByIds">
+        update zw_part set del_flag = '2' where part_id in
+        <foreach collection="array" item="partId" open="(" separator="," close=")">
+            #{partId}
+        </foreach>
+    </delete>
+
+</mapper>

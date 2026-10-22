@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.zw.mapper.ZwAssetMapper">
+
+    <resultMap type="com.ruoyi.zw.domain.ZwAsset" id="ZwAssetResult">
+        <id     property="assetId"          column="asset_id"           />
+        <result property="assetCode"        column="asset_code"         />
+        <result property="assetName"       column="asset_name"          />
+        <result property="assetType"       column="asset_type"          />
+        <result property="brand"            column="brand"               />
+        <result property="model"            column="model"               />
+        <result property="customerId"      column="customer_id"         />
+        <result property="isThirdParty"     column="is_third_party"      />
+        <result property="purchaseDate"     column="purchase_date"       />
+        <result property="warrantyEndDate"  column="warranty_end_date"   />
+        <result property="location"         column="location"            />
+        <result property="qrCode"           column="qr_code"             />
+        <result property="status"           column="status"              />
+        <result property="healthScore"      column="health_score"        />
+        <result property="inspectionConfig" column="inspection_config"   />
+        <result property="remark"           column="remark"              />
+        <result property="delFlag"          column="del_flag"             />
+        <result property="createBy"          column="create_by"          />
+        <result property="createTime"       column="create_time"         />
+        <result property="updateBy"         column="update_by"           />
+        <result property="updateTime"       column="update_time"         />
+    </resultMap>
+
+    <sql id="selectZwAssetVo">
+        select asset_id, asset_code, asset_name, asset_type, brand, model, customer_id,
+               is_third_party, purchase_date, warranty_end_date, location, qr_code,
+               status, health_score, inspection_config, remark, del_flag,
+               create_by, create_time, update_by, update_time
+        from zw_asset
+    </sql>
+
+    <select id="selectZwAssetList" parameterType="com.ruoyi.zw.domain.ZwAsset" resultMap="ZwAssetResult">
+        <include refid="selectZwAssetVo"/>
+        <where>
+            <if test="assetName != null and assetName != ''">
+                and asset_name like concat('%', #{assetName}, '%')
+            </if>
+            <if test="assetCode != null and assetCode != ''">
+                and asset_code = #{assetCode}
+            </if>
+            <if test="assetType != null and assetType != ''">
+                and asset_type = #{assetType}
+            </if>
+            <if test="customerId != null">
+                and customer_id = #{customerId}
+            </if>
+            <if test="brand != null and brand != ''">
+                and brand like concat('%', #{brand}, '%')
+            </if>
+            <if test="status != null and status != ''">
+                and status = #{status}
+            </if>
+            and del_flag = '0'
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectZwAssetById" parameterType="Long" resultMap="ZwAssetResult">
+        <include refid="selectZwAssetVo"/>
+        where asset_id = #{assetId} and del_flag = '0'
+    </select>
+
+    <select id="selectZwAssetByQrCode" parameterType="String" resultMap="ZwAssetResult">
+        <include refid="selectZwAssetVo"/>
+        where qr_code = #{qrCode} and del_flag = '0'
+    </select>
+
+    <insert id="insertZwAsset" parameterType="com.ruoyi.zw.domain.ZwAsset" useGeneratedKeys="true" keyProperty="assetId">
+        insert into zw_asset
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="assetCode != null and assetCode != ''">asset_code,</if>
+            <if test="assetName != null and assetName != ''">asset_name,</if>
+            <if test="assetType != null and assetType != ''">asset_type,</if>
+            <if test="brand != null and brand != ''">brand,</if>
+            <if test="model != null and model != ''">model,</if>
+            <if test="customerId != null">customer_id,</if>
+            <if test="isThirdParty != null">is_third_party,</if>
+            <if test="purchaseDate != null">purchase_date,</if>
+            <if test="warrantyEndDate != null">warranty_end_date,</if>
+            <if test="location != null and location != ''">location,</if>
+            <if test="qrCode != null and qrCode != ''">qr_code,</if>
+            <if test="status != null">status,</if>
+            <if test="healthScore != null">health_score,</if>
+            <if test="inspectionConfig != null">inspection_config,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            create_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="assetCode != null and assetCode != ''">#{assetCode},</if>
+            <if test="assetName != null and assetName != ''">#{assetName},</if>
+            <if test="assetType != null and assetType != ''">#{assetType},</if>
+            <if test="brand != null and brand != ''">#{brand},</if>
+            <if test="model != null and model != ''">#{model},</if>
+            <if test="customerId != null">#{customerId},</if>
+            <if test="isThirdParty != null">#{isThirdParty},</if>
+            <if test="purchaseDate != null">#{purchaseDate},</if>
+            <if test="warrantyEndDate != null">#{warrantyEndDate},</if>
+            <if test="location != null and location != ''">#{location},</if>
+            <if test="qrCode != null and qrCode != ''">#{qrCode},</if>
+            <if test="status != null">#{status},</if>
+            <if test="healthScore != null">#{healthScore},</if>
+            <if test="inspectionConfig != null">#{inspectionConfig},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            sysdate(),
+        </trim>
+    </insert>
+
+    <update id="updateZwAsset" parameterType="com.ruoyi.zw.domain.ZwAsset">
+        update zw_asset
+        <set>
+            <if test="assetCode != null and assetCode != ''">asset_code = #{assetCode},</if>
+            <if test="assetName != null and assetName != ''">asset_name = #{assetName},</if>
+            <if test="assetType != null and assetType != ''">asset_type = #{assetType},</if>
+            <if test="brand != null and brand != ''">brand = #{brand},</if>
+            <if test="model != null and model != ''">model = #{model},</if>
+            <if test="customerId != null">customer_id = #{customerId},</if>
+            <if test="isThirdParty != null">is_third_party = #{isThirdParty},</if>
+            <if test="purchaseDate != null">purchase_date = #{purchaseDate},</if>
+            <if test="warrantyEndDate != null">warranty_end_date = #{warrantyEndDate},</if>
+            <if test="location != null and location != ''">location = #{location},</if>
+            <if test="qrCode != null and qrCode != ''">qr_code = #{qrCode},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="healthScore != null">health_score = #{healthScore},</if>
+            <if test="inspectionConfig != null">inspection_config = #{inspectionConfig},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            update_time = sysdate(),
+        </set>
+        where asset_id = #{assetId}
+    </update>
+
+    <update id="deleteZwAssetByIds">
+        update zw_asset set del_flag = '2' where asset_id in
+        <foreach item="assetId" collection="array" open="(" separator="," close=")">
+            #{assetId}
+        </foreach>
+    </update>
+
+    <update id="updateAssetStatus">
+        update zw_asset set status = #{status}, update_time = sysdate() where asset_id = #{assetId}
+    </update>
+
+    <select id="selectAssetsWithExpiringWarranty" resultMap="ZwAssetResult">
+        <include refid="selectZwAssetVo"/>
+        where del_flag = '0'
+          and customer_id = #{customerId}
+          and warranty_end_date is not null
+          and warranty_end_date between #{from} and #{to}
+        order by warranty_end_date asc
+    </select>
+
+    <select id="selectZwAssetByIds" resultMap="ZwAssetResult">
+        select * from zw_asset where del_flag = '0' and asset_id in
+        <foreach item="assetId" collection="list" open="(" separator="," close=")">
+            #{assetId}
+        </foreach>
+    </select>
+
+</mapper>

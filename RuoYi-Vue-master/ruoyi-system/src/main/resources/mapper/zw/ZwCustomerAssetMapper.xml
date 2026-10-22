@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.zw.mapper.ZwCustomerAssetMapper">
+
+    <resultMap type="com.ruoyi.zw.domain.ZwAsset" id="ZwCustomerAssetResult">
+        <id     property="assetId"          column="asset_id"           />
+        <result property="assetCode"        column="asset_code"         />
+        <result property="assetName"        column="asset_name"         />
+        <result property="assetType"       column="asset_type"         />
+        <result property="brand"            column="brand"              />
+        <result property="model"            column="model"              />
+        <result property="customerId"       column="customer_id"        />
+        <result property="isThirdParty"     column="is_third_party"    />
+        <result property="purchaseDate"     column="purchase_date"     />
+        <result property="warrantyEndDate"  column="warranty_end_date"  />
+        <result property="location"         column="location"          />
+        <result property="qrCode"           column="qr_code"            />
+        <result property="status"           column="status"            />
+        <result property="healthScore"      column="health_score"       />
+        <result property="inspectionConfig" column="inspection_config" />
+        <result property="remark"           column="remark"            />
+        <result property="delFlag"          column="del_flag"          />
+        <result property="createBy"          column="create_by"         />
+        <result property="createTime"       column="create_time"       />
+        <result property="updateBy"         column="update_by"         />
+        <result property="updateTime"       column="update_time"       />
+    </resultMap>
+
+    <sql id="selectCustomerAssetVo">
+        select asset_id, asset_code, asset_name, asset_type, brand, model, customer_id,
+               is_third_party, purchase_date, warranty_end_date, location, qr_code,
+               status, health_score, inspection_config, remark, del_flag,
+               create_by, create_time, update_by, update_time
+        from zw_asset
+    </sql>
+
+    <select id="selectZwCustomerAssetList" resultMap="ZwCustomerAssetResult">
+        <include refid="selectCustomerAssetVo"/>
+        <where>
+            <if test="assetName != null and assetName != ''">
+                and asset_name like concat('%', #{assetName}, '%')
+            </if>
+            <if test="assetType != null and assetType != ''">
+                and asset_type = #{assetType}
+            </if>
+            <if test="status != null and status != ''">
+                and status = #{status}
+            </if>
+            <if test="qrCode != null and qrCode != ''">
+                and qr_code = #{qrCode}
+            </if>
+            <if test="customerId != null">
+                and customer_id = #{customerId}
+            </if>
+            and del_flag = '0'
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectZwCustomerAssetCount" resultType="int">
+        select count(1) from zw_asset
+        <where>
+            <if test="assetName != null and assetName != ''">
+                and asset_name like concat('%', #{assetName}, '%')
+            </if>
+            <if test="assetType != null and assetType != ''">
+                and asset_type = #{assetType}
+            </if>
+            <if test="status != null and status != ''">
+                and status = #{status}
+            </if>
+            <if test="qrCode != null and qrCode != ''">
+                and qr_code = #{qrCode}
+            </if>
+            <if test="customerId != null">
+                and customer_id = #{customerId}
+            </if>
+            and del_flag = '0'
+        </where>
+    </select>
+
+    <select id="selectZwCustomerAssetById" resultMap="ZwCustomerAssetResult">
+        <include refid="selectCustomerAssetVo"/>
+        where asset_id = #{assetId} and customer_id = #{customerId} and del_flag = '0'
+    </select>
+
+</mapper>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.zw.mapper.ZwAssetLogsMapper">
+
+    <resultMap type="com.ruoyi.zw.domain.ZwAssetLogs" id="ZwAssetLogsResult">
+        <id     property="logId"           column="log_id"          />
+        <result property="assetId"          column="asset_id"        />
+        <result property="workOrderId"      column="work_order_id"   />
+        <result property="operationType"    column="operation_type"  />
+        <result property="description"      column="description"      />
+        <result property="operatorId"      column="operator_id"     />
+        <result property="operatorName"     column="operator_name"   />
+        <result property="operateTime"      column="operate_time"    />
+        <result property="extraData"        column="extra_data"      />
+        <result property="createTime"        column="create_time"    />
+    </resultMap>
+
+    <sql id="selectZwAssetLogsVo">
+        select log_id, asset_id, work_order_id, operation_type, description,
+               operator_id, operator_name, operate_time, extra_data, create_time
+        from zw_asset_logs
+    </sql>
+
+    <select id="selectZwAssetLogsList" parameterType="com.ruoyi.zw.domain.ZwAssetLogs" resultMap="ZwAssetLogsResult">
+        <include refid="selectZwAssetLogsVo"/>
+        <where>
+            <if test="assetId != null">
+                and asset_id = #{assetId}
+            </if>
+            <if test="workOrderId != null">
+                and work_order_id = #{workOrderId}
+            </if>
+            <if test="operationType != null and operationType != ''">
+                and operation_type = #{operationType}
+            </if>
+            <if test="operatorId != null">
+                and operator_id = #{operatorId}
+            </if>
+            <if test="operatorName != null and operatorName != ''">
+                and operator_name like concat('%', #{operatorName}, '%')
+            </if>
+        </where>
+        order by operate_time desc
+    </select>
+
+    <select id="selectZwAssetLogsById" parameterType="Long" resultMap="ZwAssetLogsResult">
+        <include refid="selectZwAssetLogsVo"/>
+        where log_id = #{logId}
+    </select>
+
+    <select id="selectZwAssetLogsByAssetId" parameterType="Long" resultMap="ZwAssetLogsResult">
+        <include refid="selectZwAssetLogsVo"/>
+        where asset_id = #{assetId}
+        order by operate_time desc
+    </select>
+
+    <insert id="insertZwAssetLogs" parameterType="com.ruoyi.zw.domain.ZwAssetLogs" useGeneratedKeys="true" keyProperty="logId">
+        insert into zw_asset_logs
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="assetId != null">asset_id,</if>
+            <if test="workOrderId != null">work_order_id,</if>
+            <if test="operationType != null and operationType != ''">operation_type,</if>
+            <if test="description != null and description != ''">description,</if>
+            <if test="operatorId != null">operator_id,</if>
+            <if test="operatorName != null and operatorName != ''">operator_name,</if>
+            <if test="operateTime != null">operate_time,</if>
+            <if test="extraData != null">extra_data,</if>
+            create_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="assetId != null">#{assetId},</if>
+            <if test="workOrderId != null">#{workOrderId},</if>
+            <if test="operationType != null and operationType != ''">#{operationType},</if>
+            <if test="description != null and description != ''">#{description},</if>
+            <if test="operatorId != null">#{operatorId},</if>
+            <if test="operatorName != null and operatorName != ''">#{operatorName},</if>
+            <if test="operateTime != null">#{operateTime},</if>
+            <if test="extraData != null">#{extraData},</if>
+            sysdate(),
+        </trim>
+    </insert>
+
+    <update id="updateZwAssetLogs" parameterType="com.ruoyi.zw.domain.ZwAssetLogs">
+        update zw_asset_logs
+        <set>
+            <if test="operationType != null and operationType != ''">operation_type = #{operationType},</if>
+            <if test="description != null and description != ''">description = #{description},</if>
+            <if test="operatorId != null">operator_id = #{operatorId},</if>
+            <if test="operatorName != null and operatorName != ''">operator_name = #{operatorName},</if>
+            <if test="operateTime != null">operate_time = #{operateTime},</if>
+            <if test="extraData != null">extra_data = #{extraData},</if>
+        </set>
+        where log_id = #{logId}
+    </update>
+
+    <delete id="deleteZwAssetLogsByIds">
+        delete from zw_asset_logs where log_id in
+        <foreach item="logId" collection="array" open="(" separator="," close=")">
+            #{logId}
+        </foreach>
+    </delete>
+
+</mapper>

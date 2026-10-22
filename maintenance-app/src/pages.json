@@ -1,0 +1,192 @@
+{
+  "pages": [
+    {
+      "path": "pages/login/login",
+      "style": {
+        "navigationBarTitleText": "工程师登录",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/workbench/index",
+      "style": {
+        "navigationBarTitleText": "工作台"
+      }
+    },
+    {
+      "path": "pages/inspection/taskList",
+      "style": {
+        "navigationBarTitleText": "巡检任务"
+      }
+    },
+    {
+      "path": "pages/notification/list",
+      "style": {
+        "navigationBarTitleText": "消息通知"
+      }
+    },
+    {
+      "path": "pages/profile/index",
+      "style": {
+        "navigationBarTitleText": "我的"
+      }
+    },
+    {
+      "path": "pages/workOrder/list",
+      "style": {
+        "navigationBarTitleText": "工单列表"
+      }
+    },
+    {
+      "path": "pages/workOrder/detail",
+      "style": {
+        "navigationBarTitleText": "工单详情"
+      }
+    },
+    {
+      "path": "pages/workOrder/complete",
+      "style": {
+        "navigationBarTitleText": "完工确认"
+      }
+    },
+    {
+      "path": "pages/inspection/taskDetail",
+      "style": {
+        "navigationBarTitleText": "巡检详情"
+      }
+    },
+    {
+      "path": "pages/inspection/pointExecute",
+      "style": {
+        "navigationBarTitleText": "巡检执行"
+      }
+    },
+    {
+      "path": "pages/checkin/index",
+      "style": {
+        "navigationBarTitleText": "GPS打卡"
+      }
+    },
+    {
+      "path": "pages/checkin/history",
+      "style": {
+        "navigationBarTitleText": "打卡历史"
+      }
+    },
+    {
+      "path": "pages/fault/report",
+      "style": {
+        "navigationBarTitleText": "故障上报"
+      }
+    },
+    {
+      "path": "pages/dailyReport/list",
+      "style": {
+        "navigationBarTitleText": "日报"
+      }
+    },
+    {
+      "path": "pages/dailyReport/generate",
+      "style": {
+        "navigationBarTitleText": "AI生成日报"
+      }
+    },
+    {
+      "path": "pages/knowledge/list",
+      "style": {
+        "navigationBarTitleText": "知识库"
+      }
+    },
+    {
+      "path": "pages/knowledge/detail",
+      "style": {
+        "navigationBarTitleText": "知识详情"
+      }
+    },
+    {
+      "path": "pages/common/assetDetail",
+      "style": {
+        "navigationBarTitleText": "资产详情"
+      }
+    },
+    {
+      "path": "pages/profile/edit",
+      "style": {
+        "navigationBarTitleText": "编辑资料"
+      }
+    },
+    {
+      "path": "pages/profile/password",
+      "style": {
+        "navigationBarTitleText": "修改密码"
+      }
+    },
+    {
+      "path": "pages/workOrder/track",
+      "style": {
+        "navigationBarTitleText": "工单轨迹"
+      }
+    },
+    {
+      "path": "pages/inspection/report",
+      "style": {
+        "navigationBarTitleText": "巡检报告"
+      }
+    },
+    {
+      "path": "pages/fault/detail",
+      "style": {
+        "navigationBarTitleText": "故障详情"
+      }
+    },
+    {
+      "path": "pages/dailyReport/detail",
+      "style": {
+        "navigationBarTitleText": "日报详情"
+      }
+    },
+    {
+      "path": "pages/profile/about",
+      "style": {
+        "navigationBarTitleText": "关于"
+      }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "智维云服",
+    "navigationBarBackgroundColor": "#FFFFFF",
+    "backgroundColor": "#F8F8F8"
+  },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#1d4ed8",
+    "borderStyle": "black",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/workbench/index",
+        "iconPath": "static/tab_workbench.png",
+        "selectedIconPath": "static/tab_workbench_active.png",
+        "text": "工作台"
+      },
+      {
+        "pagePath": "pages/inspection/taskList",
+        "iconPath": "static/tab_inspect.png",
+        "selectedIconPath": "static/tab_inspect_active.png",
+        "text": "巡检"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "iconPath": "static/tab_mine.png",
+        "selectedIconPath": "static/tab_mine_active.png",
+        "text": "我的"
+      }
+    ]
+  },
+  "uniIdRouter": {},
+  "easycom": {
+    "uni-icons": "@dcloudio/uni-ui/lib/uni-icons/uni-icons.vue",
+    "c-icon": "@/components/c-icon/index.vue"
+  }
+}

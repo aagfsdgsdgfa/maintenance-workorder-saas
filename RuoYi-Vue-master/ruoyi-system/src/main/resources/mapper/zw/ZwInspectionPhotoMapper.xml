@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.zw.mapper.ZwInspectionPhotoMapper">
+
+    <resultMap type="com.ruoyi.zw.domain.ZwInspectionPhoto" id="ZwInspectionPhotoResult">
+        <id property="photoId" column="photo_id"/>
+        <result property="taskId" column="task_id"/>
+        <result property="workOrderId" column="work_order_id"/>
+        <result property="photoType" column="photo_type"/>
+        <result property="photoUrl" column="photo_url"/>
+        <result property="latitude" column="latitude"/>
+        <result property="longitude" column="longitude"/>
+        <result property="shootTime" column="shoot_time"/>
+        <result property="watermarkInfo" column="watermark_info"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="orderNo" column="order_no"/>
+    </resultMap>
+
+    <sql id="selectZwInspectionPhotoVo">
+        select p.photo_id, p.task_id, p.work_order_id, p.photo_type, p.photo_url,
+               p.latitude, p.longitude, p.shoot_time, p.watermark_info, p.del_flag,
+               p.create_by, p.create_time,
+               w.order_no
+        from zw_inspection_photo p
+        left join zw_work_order w on p.work_order_id = w.work_order_id
+    </sql>
+
+    <select id="selectZwInspectionPhotoList" resultMap="ZwInspectionPhotoResult">
+        <include refid="selectZwInspectionPhotoVo"/>
+        <where>
+            <if test="taskId != null">and p.task_id = #{taskId}</if>
+            <if test="workOrderId != null">and p.work_order_id = #{workOrderId}</if>
+            <if test="photoType != null and photoType != ''">and p.photo_type = #{photoType}</if>
+            and p.del_flag = '0'
+        </where>
+        order by p.shoot_time desc
+    </select>
+
+    <select id="selectZwInspectionPhotoById" resultMap="ZwInspectionPhotoResult">
+        <include refid="selectZwInspectionPhotoVo"/>
+        where p.photo_id = #{photoId} and p.del_flag = '0'
+    </select>
+
+    <insert id="insertZwInspectionPhoto" useGeneratedKeys="true" keyProperty="photoId">
+        insert into zw_inspection_photo
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="taskId != null">task_id,</if>
+            <if test="workOrderId != null">work_order_id,</if>
+            <if test="photoType != null">photo_type,</if>
+            <if test="photoUrl != null">photo_url,</if>
+            <if test="latitude != null">latitude,</if>
+            <if test="longitude != null">longitude,</if>
+            <if test="shootTime != null">shoot_time,</if>
+            <if test="watermarkInfo != null">watermark_info,</if>
+            del_flag, create_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="taskId != null">#{taskId},</if>
+            <if test="workOrderId != null">#{workOrderId},</if>
+            <if test="photoType != null">#{photoType},</if>
+            <if test="photoUrl != null">#{photoUrl},</if>
+            <if test="latitude != null">#{latitude},</if>
+            <if test="longitude != null">#{longitude},</if>
+            <if test="shootTime != null">#{shootTime},</if>
+            <if test="watermarkInfo != null">#{watermarkInfo},</if>
+            '0', now(),
+        </trim>
+    </insert>
+
+    <update id="deleteZwInspectionPhotoByIds">
+        update zw_inspection_photo set del_flag = '2' where photo_id in
+        <foreach item="photoId" collection="array" open="(" separator="," close=")">
+            #{photoId}
+        </foreach>
+    </update>
+
+</mapper>

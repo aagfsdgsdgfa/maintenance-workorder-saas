@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.zw.mapper.ZwKbCategoryMapper">
+
+    <resultMap type="com.ruoyi.zw.domain.ZwKbCategory" id="ZwKbCategoryResult">
+        <id property="categoryId" column="category_id"/>
+        <result property="categoryName" column="category_name"/>
+        <result property="categoryCode" column="category_code"/>
+        <result property="sort" column="sort"/>
+        <result property="status" column="status"/>
+        <result property="remark" column="remark"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="delFlag" column="del_flag"/>
+    </resultMap>
+
+    <sql id="selectZwKbCategoryVo">
+        select category_id, category_name, category_code, sort, status, remark,
+               create_by, create_time, update_by, update_time, del_flag
+        from zw_kb_category
+    </sql>
+
+    <select id="selectZwKbCategoryList" resultMap="ZwKbCategoryResult">
+        <include refid="selectZwKbCategoryVo"/>
+        <where>
+            <if test="categoryName != null and categoryName != ''">and category_name like concat('%', #{categoryName}, '%')</if>
+            <if test="categoryCode != null and categoryCode != ''">and category_code = #{categoryCode}</if>
+            <if test="status != null and status != ''">and status = #{status}</if>
+            and del_flag = '0'
+        </where>
+        order by sort asc
+    </select>
+
+    <select id="selectZwKbCategoryById" resultMap="ZwKbCategoryResult">
+        <include refid="selectZwKbCategoryVo"/>
+        where category_id = #{categoryId} and del_flag = '0'
+    </select>
+
+    <select id="selectAllKbCategory" resultMap="ZwKbCategoryResult">
+        <include refid="selectZwKbCategoryVo"/>
+        where del_flag = '0' and status = '0'
+        order by sort asc
+    </select>
+
+    <insert id="insertZwKbCategory" useGeneratedKeys="true" keyProperty="categoryId">
+        insert into zw_kb_category
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="categoryName != null">category_name,</if>
+            <if test="categoryCode != null">category_code,</if>
+            <if test="sort != null">sort,</if>
+            <if test="status != null">status,</if>
+            <if test="remark != null">remark,</if>
+            del_flag, create_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="categoryName != null">#{categoryName},</if>
+            <if test="categoryCode != null">#{categoryCode},</if>
+            <if test="sort != null">#{sort},</if>
+            <if test="status != null">#{status},</if>
+            <if test="remark != null">#{remark},</if>
+            '0', now(),
+        </trim>
+    </insert>
+
+    <update id="updateZwKbCategory">
+        update zw_kb_category
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="categoryName != null">category_name = #{categoryName},</if>
+            <if test="categoryCode != null">category_code = #{categoryCode},</if>
+            <if test="sort != null">sort = #{sort},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where category_id = #{categoryId} and del_flag = '0'
+    </update>
+
+    <update id="deleteZwKbCategoryByIds">
+        update zw_kb_category set del_flag = '2' where category_id in
+        <foreach item="categoryId" collection="array" open="(" separator="," close=")">
+            #{categoryId}
+        </foreach>
+    </update>
+
+    <select id="checkCategoryCodeUnique" resultType="int">
+        select count(1) from zw_kb_category
+        where category_code = #{categoryCode} and del_flag = '0'
+        <if test="categoryId != null">and category_id != #{categoryId}</if>
+    </select>
+
+</mapper>
